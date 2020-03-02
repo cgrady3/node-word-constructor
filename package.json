@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/cgrady3/node-word-constructor#readme",
   "dependencies": {
+    "chalk": "^3.0.0",
     "inquirer": "^7.0.5"
   }
 }
