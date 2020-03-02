@@ -3,26 +3,27 @@ var inquirer = require('inquirer');
 var chalk = require('chalk');
 // variables
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
-var alphabet = ['a', 'b', 'c', 'd', 'e', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 var guessed = false;
 var guesses = [];
 var lives = 5;
+var done = false;
 
-function start() {
+console.log(chalk.blue(
+    '\n-------------------------------\n' +
+    ' W o r d   G u e s s   G a m e \n' +
+    '-------------------------------\n'
+));
 
-    console.log(chalk.blue(
-        '\n-------------------------------\n' +
-        ' W o r d   G u e s s   G a m e \n' +
-        '-------------------------------\n'
-    ));
-    // get a random word from the words array
-    word = randWord();
+// get a random word from the words array
+var word = randWord();
 
-    //display secret word placeholder
-    for (var i in word) {
-        process.stdout.write('_ ')
-    }
-    console.log('\n\n');
+//display secret word placeholder
+for (var i in word) {
+    process.stdout.write('_ ')
+}
+console.log('\n\n');
+
+function start(word) {
 
     // get user first guess
     inquirer
@@ -51,10 +52,7 @@ function randWord() {
 
 function mainPlay(guess, word) {
 
-
-
-
-    //check is user has guessed the letter already
+    //check if user has guessed the letter already
     checkGuess(guess);
     // compare user guess to the secret word
     if (isMatch(wordLetters, guess)) {
@@ -64,6 +62,8 @@ function mainPlay(guess, word) {
         console.log(chalk.red('\n\nINCORRECT GUESS!'));
         console.log(chalk.red(`${lives} incorrect guesses remaining`));
     }
+
+   keepPlaying(lives);
 }
 
 function checkGuess(guess) {
@@ -76,7 +76,7 @@ function checkGuess(guess) {
         }
     }
     if (count > 0) {
-        console.log(chalk.orange('You had already guessed that letter'));
+        console.log(chalk.yellow('\nYou had already guessed that letter'));
     }
     //add the guess to the guesses array
     guesses.push(guess);
@@ -94,30 +94,33 @@ function isMatch(letters, guess) {
             process.stdout.write('_ ');
         }
     }
-
     return match;
 }
 
-// let secret = 'criminology';
-// let arr = secret.split('');
-// for (var i in arr){
-//     process.stdout.write('_ ')
-// }
-// function placeHolder(){
+function keepPlaying(lives){
+    
+        if (lives = 0) {
+            process.exit();
+        }
+        else {
+            start(word);
+        }
+}
 
 
 
 
-// }
+
 // prompt user to guess a letter DONE
 // take in that letter and save it to a variable DONE
 // to lowercase the guess DONE
-// validate user guess is in the alphabet array
-// change the guessed value of that letter to true
+// validate user guess is a letter DONE
+// check the letter hasn't been guessed already SORTOF
 // call one of the random words to be used for this round DONE
 // split the secret word into an array of letters DONE
-// loop through the letters and compare the user guess
-// for any match found reveal that letter
-// if match is not found lose a life
-start();
-//placeHolder()
+// loop through the letters and compare the user guess DONE
+// for any match found reveal that letter DONE
+// if match is not found lose a life DONE
+// keep playing until out of lives or word is guessed
+start(word);
+
