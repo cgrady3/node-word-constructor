@@ -98,9 +98,8 @@ function isMatch(letters, guess) {
 }
 
 function keepPlaying(lives){
-    
-        if (lives = 0) {
-            process.exit();
+        if (lives <  1) {
+            process.exit(0);
         }
         else {
             start(word);
