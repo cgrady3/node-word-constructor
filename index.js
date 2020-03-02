@@ -1,18 +1,30 @@
+// requires
 var inquirer = require('inquirer');
 var chalk = require('chalk');
+// variables
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
 var alphabet = ['a', 'b', 'c', 'd', 'e', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 var guessed = false;
 var guesses = [];
+var lives = 5;
 
 function start() {
-    var lives = 5;
 
     console.log(chalk.blue(
         '\n-------------------------------\n' +
         ' W o r d   G u e s s   G a m e \n' +
         '-------------------------------\n'
     ));
+    // get a random word from the words array
+    word = randWord();
+
+    //display secret word placeholder
+    for (var i in word) {
+        process.stdout.write('_ ')
+    }
+    console.log('\n\n');
+
+    // get user first guess
     inquirer
         .prompt({
             name: 'guess',
@@ -25,9 +37,9 @@ function start() {
         .then(answers => {
             // store the user guess as a lowercase letter
             guess = (answers.guess).toLowerCase();
-            //check is user has guessed the letter already
-            checkGuess(guess);
-            mainPlay(guess);
+
+            // pass the user guess and secret word to the mainPlay function
+            mainPlay(guess, word);
         })
 }
 
@@ -37,50 +49,66 @@ function randWord() {
     return wordLetters;
 }
 
-function checkGuess(guess){
+function mainPlay(guess, word) {
+
+
+
+
+    //check is user has guessed the letter already
+    checkGuess(guess);
+    // compare user guess to the secret word
+    if (isMatch(wordLetters, guess)) {
+        console.log(chalk.green('\n\nGOOD GUESS!'));
+    } else {
+        lives--;
+        console.log(chalk.red('\n\nINCORRECT GUESS!'));
+        console.log(chalk.red(`${lives} incorrect guesses remaining`));
+    }
+}
+
+function checkGuess(guess) {
     let count = 0;
-    for (var i in guesses){
-        if(guess === guesses[i]){
-        // if the letter was already guessed remove it from the array so it won't be there more than once
-        guesses.splice(i,1);
-        count++
+    for (var i in guesses) {
+        if (guess === guesses[i]) {
+            // if the letter was already guessed remove it from the array so it won't be there more than once
+            guesses.splice(i, 1);
+            count++
         }
-    }  
-    if (count > 0){
+    }
+    if (count > 0) {
         console.log(chalk.orange('You had already guessed that letter'));
     }
     //add the guess to the guesses array
     guesses.push(guess);
 }
 
-function mainPlay(guess){
-    // get a random word from the words array
-    wordLetters = randWord();
-    // compare user guess to the secret word
-    if (isMatch(wordLetters, guess)) {
-        console.log(chalk.green('CORRECT!'));
-    } else {
-        lives--;
-        console.log(chalk.red('INCORRECT!'));
-        console.log(chalk.red(`${lives} incorrect guesses remaining`));
-    }
-}
-
 function isMatch(letters, guess) {
-    var count = 0
+    let count = 0;
+    let match = false;
     for (var i in letters) {
-        if (letters[i] === '-') {
-            console.log('-');
-            space++;
+        if (letters[i] === guess) {
+            process.stdout.write(guess + ' ');
+            match = true;
         }
-        else
-            console.log('_');
-        // if (guess === letters[i]){
-
-        // }
+        else {
+            process.stdout.write('_ ');
+        }
     }
+
+    return match;
 }
 
+// let secret = 'criminology';
+// let arr = secret.split('');
+// for (var i in arr){
+//     process.stdout.write('_ ')
+// }
+// function placeHolder(){
+
+
+
+
+// }
 // prompt user to guess a letter DONE
 // take in that letter and save it to a variable DONE
 // to lowercase the guess DONE
@@ -91,5 +119,5 @@ function isMatch(letters, guess) {
 // loop through the letters and compare the user guess
 // for any match found reveal that letter
 // if match is not found lose a life
-//start();
-isMatch()
+start();
+//placeHolder()
