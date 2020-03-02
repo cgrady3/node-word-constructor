@@ -3,6 +3,7 @@ var chalk = require('chalk');
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
 var alphabet = ['a', 'b', 'c', 'd', 'e', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 var guessed = false;
+var guesses = [];
 
 function start() {
     var lives = 5;
@@ -24,14 +25,9 @@ function start() {
         .then(answers => {
             // store the user guess as a lowercase letter
             guess = (answers.guess).toLowerCase();
-            wordLetters = randWord();
-            if(isMatch(wordLetters, guess)){
-                console.log(chalk.green('CORRECT!'));
-            } else {
-              console.log(chalk.red('INCORRECT!'));
-              lives--;
-              console.log(chalk.red(`${lives} incorrect guesses remaining`));
-            }
+            //check is user has guessed the letter already
+            checkGuess(guess);
+            mainPlay(guess);
         })
 }
 
@@ -39,6 +35,35 @@ function randWord() {
     word = words[Math.floor(Math.random() * 5)];
     wordLetters = word.split('')
     return wordLetters;
+}
+
+function checkGuess(guess){
+    let count = 0;
+    for (var i in guesses){
+        if(guess === guesses[i]){
+        // if the letter was already guessed remove it from the array so it won't be there more than once
+        guesses.splice(i,1);
+        count++
+        }
+    }  
+    if (count > 0){
+        console.log(chalk.orange('You had already guessed that letter'));
+    }
+    //add the guess to the guesses array
+    guesses.push(guess);
+}
+
+function mainPlay(guess){
+    // get a random word from the words array
+    wordLetters = randWord();
+    // compare user guess to the secret word
+    if (isMatch(wordLetters, guess)) {
+        console.log(chalk.green('CORRECT!'));
+    } else {
+        lives--;
+        console.log(chalk.red('INCORRECT!'));
+        console.log(chalk.red(`${lives} incorrect guesses remaining`));
+    }
 }
 
 function isMatch(letters, guess) {
@@ -66,4 +91,5 @@ function isMatch(letters, guess) {
 // loop through the letters and compare the user guess
 // for any match found reveal that letter
 // if match is not found lose a life
-start();
+//start();
+isMatch()
