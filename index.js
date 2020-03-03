@@ -5,8 +5,11 @@ var chalk = require('chalk');
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
 var guessed = false;
 var guesses = [];
+var displayArr = [];
 var lives = 5;
 var done = false;
+var correct = 0;
+//process.emitter.setMaxListeners(100);
 
 console.log(chalk.blue(
     '\n-------------------------------\n' +
@@ -17,15 +20,14 @@ console.log(chalk.blue(
 // get a random word from the words array
 var word = randWord();
 
-//display secret word placeholder
+//display secret word initial placeholder
 for (var i in word) {
     process.stdout.write('_ ')
 }
 console.log('\n\n');
 
 function start(word) {
-
-    // get user first guess
+    // get user guess
     inquirer
         .prompt({
             name: 'guess',
@@ -38,35 +40,32 @@ function start(word) {
         .then(answers => {
             // store the user guess as a lowercase letter
             guess = (answers.guess).toLowerCase();
-
             // pass the user guess and secret word to the mainPlay function
-            mainPlay(guess, word);
+            mainPlay(word, guess);
         })
 }
 
-function randWord() {
-    word = words[Math.floor(Math.random() * 5)];
-    wordLetters = word.split('')
-    return wordLetters;
-}
+function mainPlay(word, guess) {
 
-function mainPlay(guess, word) {
-
+    // secret word display
     //check if user has guessed the letter already
-    checkGuess(guess);
+    if (isRepeat(guess)) {
+        console.log(chalk.yellow('\n\nYou had already guessed that letter'));
+    }
     // compare user guess to the secret word
-    if (isMatch(wordLetters, guess)) {
+    else if (isMatch(word, guess)) {
         console.log(chalk.green('\n\nGOOD GUESS!'));
-    } else {
+    }
+    else {
         lives--;
         console.log(chalk.red('\n\nINCORRECT GUESS!'));
         console.log(chalk.red(`${lives} incorrect guesses remaining`));
     }
-
-   keepPlaying(lives);
+    // passing in correct from the global variable updated by isMatch function
+    keepPlaying(correct, word, lives);
 }
 
-function checkGuess(guess) {
+function isRepeat(guess) {
     let count = 0;
     for (var i in guesses) {
         if (guess === guesses[i]) {
@@ -75,38 +74,72 @@ function checkGuess(guess) {
             count++
         }
     }
-    if (count > 0) {
-        console.log(chalk.yellow('\nYou had already guessed that letter'));
-    }
     //add the guess to the guesses array
     guesses.push(guess);
+    // return true if letter was already guessed else return false
+    if (count > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 function isMatch(letters, guess) {
     let count = 0;
     let match = false;
+    let matches = [];
     for (var i in letters) {
         if (letters[i] === guess) {
-            process.stdout.write(guess + ' ');
+            matches.push(guess)
             match = true;
+            correct++
         }
         else {
-            process.stdout.write('_ ');
+            matches.push('_')
         }
     }
+    display(matches)
     return match;
 }
 
-function keepPlaying(lives){
-        if (lives <  1) {
-            process.exit(0);
+function display(placeHolder) {
+    for (var i in placeHolder) {
+        if (placeHolder[i] !== '_') {
+            displayArr[i] = placeHolder[i];
         }
-        else {
-            start(word);
-        }
+    }
+
+    for (var i in displayArr){
+    process.stdout.write(displayArr[i] + ' ');
+    }
 }
 
+function keepPlaying(correct, word, lives) {
+    if (lives < 1) {
+        console.log(chalk.cyan('You lost, Bummer!'));
+        process.exit(0);
+    }
+    else if (correct === word.length){
+        console.log(chalk.cyan('You\'ve revealed the secret word!'));
+        process.exit(0);
+    }
+    else {
+        start(word);
+    }
+}
 
+function randWord() {
+    // get a random word from the words array
+    word = words[Math.floor(Math.random() * (words.length))];
+    // make the word an array of its letters
+    wordLetters = word.split('')
+    // for every letter in the chosen word push placeholder to the displayArr
+    for (var i in wordLetters) {
+        displayArr.push('_')
+    }
+    return wordLetters;
+}
 
 
 
