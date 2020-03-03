@@ -1,10 +1,11 @@
 // requires
 var inquirer = require('inquirer');
 var chalk = require('chalk');
-// event has more than the 10 event implicit limit, it's not a memory leak so supress it
+// by default if event has more than the 10 emitters leak is assumed
+// this program is not producing a memory leak so supress this warning
 const EventEmitter = require('events');
-const emitter = new EventEmitter();
-emitter.setMaxListeners(0)
+EventEmitter.defaultMaxListeners = Infinity;
+
 // variables
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
 var guessed = false;
