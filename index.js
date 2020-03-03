@@ -86,46 +86,52 @@ function isMatch(letters, guess) {
     let match = false;
     var matches = [];
     for (var i in letters) {
-        if (letters[i] === guess) {
+        // check if user guess matches letters in the secret word
+        if (guess === letters[i]) {
+            // push correct guesses to its spot in the secret word held in the matches array
             matches.push(guess)
+            // signal that the user guessed a correct word
             match = true;
+            // push guess to global array 'correct' to keep track of how many letters of the secret word have been guessed
             correct.push(guess);
         }
         else {
+            // unmatched indexes get a placeholder
             matches.push('_')
         }
-    } console.log('matches: ' + matches)
+    } 
     display(matches)
+    // signal that the user made a correct guess
     return match;
 }
 
 function display(placeHolder) {
-    
-    console.log('placeHolder: ' + placeHolder)
+    // pass correctly guessed letters to the placeholder display in their correct spot
     for (var i in placeHolder) {
+        // if the passed in array has a correctly guessed letter add it to the display array 
         if (placeHolder[i] !== '_') {
             displayArr[i] = placeHolder[i];
         }
     }
-    console.log('displayArr: ' + displayArr)
-
+    // display the updated placeholder with revealed letters
     for (var i in displayArr) {
         process.stdout.write(displayArr[i] + ' ');
     }
 }
 
 function keepPlaying(correct, word, lives) {
-    console.log('correct: ' + correct.length)
-    console.log('words length: ' + words.length)
     if (lives < 1) {
         console.log(chalk.cyan('You lost, Bummer!'));
         process.exit(0);
     }
+    // check if all letters in the secret word are revealed
     else if (correct.length === word.length) {
-        console.log(chalk.cyan('You\'ve revealed the secret word!'));
+        console.log(chalk.cyan('You\'ve revealed the all of the secret words!'));
+        // if there are no more secret words, end the game
         if (words.length === 0) {
             process.exit(0);
         }
+        // if there are more secret words to guess reset arrays and start game with new word
         else {
             console.log(chalk.cyan('On to the next word!'));
             guesses.splice(0, guesses.length);
@@ -135,6 +141,7 @@ function keepPlaying(correct, word, lives) {
             start(word);
         }
     }
+    // if not out of words to guess or wrong guesses to make, continue game
     else {
         start(word);
     }
@@ -145,14 +152,13 @@ function randWord() {
     let index = Math.floor(Math.random() * (words.length));
     // get a random word from the words array
     word = words[index];
-    //display secret word initial placeholder
+    //display secret word initial placeholder for this round
     for (var i in word) {
         process.stdout.write('_ ')
     }
     console.log('\n\n');
     // remove this rounds secret word from the words array
     words.splice(index, 1);
-    console.log(words)
     // make the word an array of secret word's letters
     wordLetters = word.split('')
     // for every letter in the chosen word push placeholder to the displayArr
@@ -162,5 +168,6 @@ function randWord() {
     return wordLetters;
 }
 
+// initial call to start the game
 start(word);
 
