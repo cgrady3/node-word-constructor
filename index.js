@@ -8,12 +8,10 @@ EventEmitter.defaultMaxListeners = Infinity;
 
 // variables
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
-var guessed = false;
+var lives = 10;
 var guesses = [];
 var displayArr = [];
-var lives = 5;
-var done = false;
-var correct = 0;
+var correct = [];
 
 console.log(chalk.blue.bold(
     '\n-------------------------------\n' +
@@ -23,12 +21,6 @@ console.log(chalk.blue.bold(
 
 // get a random word from the words array
 var word = randWord();
-
-//display secret word initial placeholder
-for (var i in word) {
-    process.stdout.write('_ ')
-}
-console.log('\n\n');
 
 function start(word) {
     // get user guess
@@ -92,41 +84,56 @@ function isRepeat(guess) {
 function isMatch(letters, guess) {
     let count = 0;
     let match = false;
-    let matches = [];
+    var matches = [];
     for (var i in letters) {
         if (letters[i] === guess) {
             matches.push(guess)
             match = true;
-            correct++
+            correct.push(guess);
         }
         else {
             matches.push('_')
         }
-    }
+    } console.log('matches: ' + matches)
     display(matches)
     return match;
 }
 
 function display(placeHolder) {
+    
+    console.log('placeHolder: ' + placeHolder)
     for (var i in placeHolder) {
         if (placeHolder[i] !== '_') {
             displayArr[i] = placeHolder[i];
         }
     }
+    console.log('displayArr: ' + displayArr)
 
-    for (var i in displayArr){
-    process.stdout.write(displayArr[i] + ' ');
+    for (var i in displayArr) {
+        process.stdout.write(displayArr[i] + ' ');
     }
 }
 
 function keepPlaying(correct, word, lives) {
+    console.log('correct: ' + correct.length)
+    console.log('words length: ' + words.length)
     if (lives < 1) {
         console.log(chalk.cyan('You lost, Bummer!'));
         process.exit(0);
     }
-    else if (correct === word.length){
+    else if (correct.length === word.length) {
         console.log(chalk.cyan('You\'ve revealed the secret word!'));
-        process.exit(0);
+        if (words.length === 0) {
+            process.exit(0);
+        }
+        else {
+            console.log(chalk.cyan('On to the next word!'));
+            guesses.splice(0, guesses.length);
+            displayArr.splice(0, displayArr.length);
+            correct.splice(0, correct.length);
+            word = randWord();
+            start(word);
+        }
     }
     else {
         start(word);
@@ -134,9 +141,19 @@ function keepPlaying(correct, word, lives) {
 }
 
 function randWord() {
+    // get random array index
+    let index = Math.floor(Math.random() * (words.length));
     // get a random word from the words array
-    word = words[Math.floor(Math.random() * (words.length))];
-    // make the word an array of its letters
+    word = words[index];
+    //display secret word initial placeholder
+    for (var i in word) {
+        process.stdout.write('_ ')
+    }
+    console.log('\n\n');
+    // remove this rounds secret word from the words array
+    words.splice(index, 1);
+    console.log(words)
+    // make the word an array of secret word's letters
     wordLetters = word.split('')
     // for every letter in the chosen word push placeholder to the displayArr
     for (var i in wordLetters) {
