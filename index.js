@@ -1,6 +1,10 @@
 // requires
 var inquirer = require('inquirer');
 var chalk = require('chalk');
+// event has more than the 10 event implicit limit, it's not a memory leak so supress it
+const EventEmitter = require('events');
+const emitter = new EventEmitter();
+emitter.setMaxListeners(0)
 // variables
 var words = ['fanatical', 'uncovered', 'cumbersome', 'quarrelsome', 'uttermost'];
 var guessed = false;
@@ -9,9 +13,8 @@ var displayArr = [];
 var lives = 5;
 var done = false;
 var correct = 0;
-//process.emitter.setMaxListeners(100);
 
-console.log(chalk.blue(
+console.log(chalk.blue.bold(
     '\n-------------------------------\n' +
     ' W o r d   G u e s s   G a m e \n' +
     '-------------------------------\n'
@@ -50,16 +53,16 @@ function mainPlay(word, guess) {
     // secret word display
     //check if user has guessed the letter already
     if (isRepeat(guess)) {
-        console.log(chalk.yellow('\n\nYou had already guessed that letter'));
+        console.log(chalk.yellow('\n\nYou had already guessed that letter\n'));
     }
     // compare user guess to the secret word
     else if (isMatch(word, guess)) {
-        console.log(chalk.green('\n\nGOOD GUESS!'));
+        console.log(chalk.green('\n\nGOOD GUESS!\n'));
     }
     else {
         lives--;
-        console.log(chalk.red('\n\nINCORRECT GUESS!'));
-        console.log(chalk.red(`${lives} incorrect guesses remaining`));
+        console.log(chalk.red('\n\nINCORRECT GUESS!\n'));
+        console.log(chalk.red(`${lives} incorrect guesses remaining\n`));
     }
     // passing in correct from the global variable updated by isMatch function
     keepPlaying(correct, word, lives);
@@ -141,18 +144,5 @@ function randWord() {
     return wordLetters;
 }
 
-
-
-// prompt user to guess a letter DONE
-// take in that letter and save it to a variable DONE
-// to lowercase the guess DONE
-// validate user guess is a letter DONE
-// check the letter hasn't been guessed already SORTOF
-// call one of the random words to be used for this round DONE
-// split the secret word into an array of letters DONE
-// loop through the letters and compare the user guess DONE
-// for any match found reveal that letter DONE
-// if match is not found lose a life DONE
-// keep playing until out of lives or word is guessed
 start(word);
 
