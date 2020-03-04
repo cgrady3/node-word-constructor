@@ -58,7 +58,7 @@ function mainPlay(word, guess) {
         console.log(chalk.red(`${lives} incorrect guesses remaining\n`));
     }
     // passing in correct from the global variable updated by isMatch function
-    keepPlaying(correct, word, lives);
+    keepPlaying(correct, words, word, lives);
 }
 
 function isRepeat(guess) {
@@ -119,16 +119,17 @@ function display(placeHolder) {
     }
 }
 
-function keepPlaying(correct, word, lives) {
+function keepPlaying(correct, words, word, lives) {
     if (lives < 1) {
         console.log(chalk.cyan('You lost, Bummer!'));
         process.exit(0);
     }
     // check if all letters in the secret word are revealed
     else if (correct.length === word.length) {
-        console.log(chalk.cyan('You\'ve revealed the all of the secret words!'));
         // if there are no more secret words, end the game
         if (words.length === 0) {
+            console.log(chalk.cyan('              CONGRATULATIONS!'));
+            console.log(chalk.cyan('You\'ve revealed the all of the secret words!'));
             process.exit(0);
         }
         // if there are more secret words to guess reset arrays and start game with new word
